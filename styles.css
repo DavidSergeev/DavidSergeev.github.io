@@ -1,18 +1,32 @@
-#container {
-    width: 90%;
-    height: 90%;
-    position: absolute;
+body {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 20s ease infinite;
+    height: 100vh;
+    overflow-y: hidden;
+}
     
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
-#root {
-    width: 60%;
-    margin-left: 40%;
-    margin-top: 20%;
 
-    align-items: center;
-    justify-content: center;
-    position: relative;
+#root {
+    padding-top: 5%;
+    margin-left: 33%;
+    width: 50%;
+}
+#title {
+    margin-left: 42%;
+    padding-top: 15%;
 }
 
 #output:disabled{
@@ -22,7 +36,15 @@
  
 }
 
-#a, #b, #output {
+#output {
+    width: 250px;
+    height: 50px;
+    font-size: 18px;
+    font-weight: 200;
+  
+}
+
+#a, #b {
     height: 30px;
     font-size: 15px;
 }
