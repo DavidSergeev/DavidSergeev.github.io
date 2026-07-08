@@ -105,6 +105,42 @@ function Chat() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, isTyping]);
 
+  useEffect(() => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const GAP = 16;
+
+    function scrollAboveKeyboard() {
+      const vv = window.visualViewport;
+      if (!vv || !textareaRef.current) return;
+      const rect = textareaRef.current.getBoundingClientRect();
+      const taPageBottom = window.scrollY + rect.bottom;
+      const targetScrollY = taPageBottom - (vv.height - GAP);
+      window.scrollTo({ top: targetScrollY, behavior: "smooth" });
+    }
+
+    function handleViewportResize() {
+      scrollAboveKeyboard();
+      setTimeout(scrollAboveKeyboard, 320);
+    }
+
+    function onFocus() {
+      window.visualViewport?.addEventListener("resize", handleViewportResize);
+    }
+
+    function onBlur() {
+      window.visualViewport?.removeEventListener("resize", handleViewportResize);
+    }
+
+    ta.addEventListener("focus", onFocus);
+    ta.addEventListener("blur", onBlur);
+    return () => {
+      ta.removeEventListener("focus", onFocus);
+      ta.removeEventListener("blur", onBlur);
+      window.visualViewport?.removeEventListener("resize", handleViewportResize);
+    };
+  }, []);
+
   function sendMessage(text: string) {
     if (!text.trim()) return;
     setMessages((prev) => [...prev, { id: nextId++, role: "user", text }]);
