@@ -151,7 +151,7 @@ function Chat() {
     const ta = textareaRef.current;
     if (ta) {
       ta.style.height = "auto";
-      ta.style.height = `${Math.min(ta.scrollHeight, 20)}px`;
+      ta.style.height = `${Math.min(ta.scrollHeight, 120)}px`;
     }
   }
 
