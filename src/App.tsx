@@ -105,41 +105,6 @@ function Chat() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, isTyping]);
 
-  useEffect(() => {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    const GAP = 2;
-
-    function scrollAboveKeyboard() {
-      const vv = window.visualViewport;
-      if (!vv || !textareaRef.current) return;
-      const rect = textareaRef.current.getBoundingClientRect();
-      const taPageBottom = window.scrollY + rect.bottom;
-      const targetScrollY = taPageBottom - (vv.height - GAP);
-      window.scrollTo({ top: targetScrollY, behavior: "smooth" });
-    }
-
-    function handleViewportResize() {
-      scrollAboveKeyboard();
-      setTimeout(scrollAboveKeyboard, 500);
-    }
-
-    function onFocus() {
-      window.visualViewport?.addEventListener("resize", handleViewportResize);
-    }
-
-    function onBlur() {
-      window.visualViewport?.removeEventListener("resize", handleViewportResize);
-    }
-
-    ta.addEventListener("focus", onFocus);
-    ta.addEventListener("blur", onBlur);
-    return () => {
-      ta.removeEventListener("focus", onFocus);
-      ta.removeEventListener("blur", onBlur);
-      window.visualViewport?.removeEventListener("resize", handleViewportResize);
-    };
-  }, []);
 
   function sendMessage(text: string) {
     if (!text.trim()) return;
@@ -186,7 +151,7 @@ function Chat() {
     const ta = textareaRef.current;
     if (ta) {
       ta.style.height = "auto";
-      ta.style.height = `${Math.min(ta.scrollHeight, 120)}px`;
+      ta.style.height = `${Math.min(ta.scrollHeight, 20)}px`;
     }
   }
 
