@@ -113,16 +113,16 @@ function Chat() {
     const GAP = 16;
 
     function scrollAboveKeyboard() {
-      const vv = window.visualViewport;
-      if (!vv || !textareaRef.current) return;
-      const rect = textareaRef.current.getBoundingClientRect();
-      // Absolute Y of textarea bottom in the full page
-      const taPageBottom = window.scrollY + rect.bottom;
-      // We want: after scroll, textarea bottom sits GAP px above keyboard top (= vv.height)
-      const targetScrollY = taPageBottom - (vv.height - GAP);
-      if (targetScrollY > window.scrollY) {
-        window.scrollTo({ top: targetScrollY, behavior: "smooth" });
-      }
+      // const vv = window.visualViewport;
+      // if (!vv || !textareaRef.current) return;
+      // const rect = textareaRef.current.getBoundingClientRect();
+      // // Absolute Y of textarea bottom in the full page
+      // const taPageBottom = window.scrollY + rect.bottom;
+      // // We want: after scroll, textarea bottom sits GAP px above keyboard top (= vv.height)
+      // const targetScrollY = taPageBottom - (vv.height - GAP);
+      // if (targetScrollY > window.scrollY) {
+      //   window.scrollTo({ top: targetScrollY, behavior: "smooth" });
+      // }
     }
 
     function handleViewportResize() {
