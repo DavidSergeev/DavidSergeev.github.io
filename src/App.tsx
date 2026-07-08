@@ -110,7 +110,7 @@ function Chat() {
   useEffect(() => {
     const ta = textareaRef.current;
     if (!ta) return;
-    const GAP = 16;
+    //const GAP = 16;
 
     function scrollAboveKeyboard() {
       // const vv = window.visualViewport;
