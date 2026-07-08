@@ -160,7 +160,7 @@ a {
   justify-content: flex-end;
   gap: 36px;
   width: 100%;
-  min-height: calc(100dvh - 264px);
+  min-height: calc(80dvh - 64px);
   padding: clamp(48px, 8vh, 96px) clamp(20px, 5vw, 60px) clamp(48px, 6vh, 80px);
 }
 
