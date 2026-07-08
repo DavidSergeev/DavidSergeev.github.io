@@ -1,9 +1,9 @@
 {
-  "name": "landing_page",
+  "name": "David's Landing Page",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://github.com/DavidSergeev/agent-landing/",
+  "homepage": "https://davidsergeev.github.io/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
