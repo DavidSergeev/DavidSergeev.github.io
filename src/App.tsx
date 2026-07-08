@@ -108,7 +108,7 @@ function Chat() {
   useEffect(() => {
     const ta = textareaRef.current;
     if (!ta) return;
-    const GAP = 64;
+    const GAP = 2;
 
     function scrollAboveKeyboard() {
       const vv = window.visualViewport;
@@ -121,7 +121,7 @@ function Chat() {
 
     function handleViewportResize() {
       scrollAboveKeyboard();
-      setTimeout(scrollAboveKeyboard, 0);
+      setTimeout(scrollAboveKeyboard, 500);
     }
 
     function onFocus() {
