@@ -594,6 +594,7 @@ a {
   padding: 10px 14px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
   transition: border-color 0.2s;
+  min-width: 0;
 }
 
 .chat-input-bar:focus-within {
@@ -602,6 +603,7 @@ a {
 
 .chat-input-bar textarea {
   flex: 1;
+  min-width: 0;
   resize: none;
   background: transparent;
   border: none;
@@ -731,6 +733,45 @@ a {
   .site-footer {
     justify-content: center;
     text-align: center;
+  }
+
+  .hero {
+    min-height: auto;
+    padding: 32px 18px 36px;
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+
+  .hero-intro {
+    margin-bottom: 1.5rem;
+    max-width: 100%;
+  }
+
+  .chat-embed {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0;
+  }
+
+  .chat-input-bar {
+    min-width: 0;
+  }
+
+  .chat-input-bar textarea {
+    min-width: 0;
+  }
+
+  .chat-quick-btns {
+    width: 100%;
+  }
+
+  .quick-btn {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .chat-messages {
+    height: 220px;
   }
 
   /* Skills: 2-column grid on mobile, smaller cards */
