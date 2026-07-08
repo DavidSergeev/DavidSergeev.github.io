@@ -40,7 +40,7 @@ const QUICK_ACTIONS: QuickAction[] = [
     autoSend: false,
   },
   {
-    label: "Request David to contact you",
+    label: "Request a call from David",
     text: "Please have David reach out to me. My contact details: ",
     autoSend: false,
   },
