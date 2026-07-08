@@ -1,59 +1,13 @@
 <!doctype html>
-
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>Home work 1</title>
-  <meta name="author" content="SitePoint">
-
-  <link rel="stylesheet" href="styles.css">
-
-</head>
-
-<body>
-  <!-- your content here... -->
-  <script src="hello-world.js"></script>
-  <div id="container">
-    <h2 id="title">Basic calculator</h2>
-    <div id="root">
-        <span >
-    
-            <input id="a" 
-            placeholder="First number"
-            type="text"
-            onkeypress="check(this.value, 1)"
-            onkeyup="check(this.value, 1)"
-            onkeydown="heck(this.value, 1)"
-            
-
-            />
-        </span>
-        <span id="op">
-            <select  id="operation">
-                <option value="" selected disabled hidden>Operator</option>
-                <option value="+">+</option>
-                <option value="-">-</option>
-                <option value="*">*</option>
-                <option value="/">/</option>
-                <option value="^">^</option>
-            </select>
-        </span>
-        <span>
-    
-            <input id="b" type="text"
-            placeholder="Second number"
-            onkeypress="check(this.value, 2)"
-            onkeyup="check(this.value, 2)"
-            onkeydown="heck(this.value, 2)"
-            /></span>
-        <span id="calc">
-            <button id="calculate"
-            onclick=calculate()>=</button>
-        </span>
-        <span id="out"><input id="output" disabled type="text"/></span>
-      </div>
-  </div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>landing_page</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
