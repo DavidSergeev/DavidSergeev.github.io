@@ -105,6 +105,49 @@ function Chat() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, isTyping]);
 
+  // Scroll the page so the textarea sits just above the mobile keyboard.
+  // Uses visualViewport.resize which fires when the soft keyboard opens/closes.
+  useEffect(() => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const GAP = 16;
+
+    function scrollAboveKeyboard() {
+      const vv = window.visualViewport;
+      if (!vv || !textareaRef.current) return;
+      const rect = textareaRef.current.getBoundingClientRect();
+      // Absolute Y of textarea bottom in the full page
+      const taPageBottom = window.scrollY + rect.bottom;
+      // We want: after scroll, textarea bottom sits GAP px above keyboard top (= vv.height)
+      const targetScrollY = taPageBottom - (vv.height - GAP);
+      if (targetScrollY > window.scrollY) {
+        window.scrollTo({ top: targetScrollY, behavior: "smooth" });
+      }
+    }
+
+    function handleViewportResize() {
+      scrollAboveKeyboard();
+      // Re-run after keyboard animation finishes (~300 ms on iOS)
+      setTimeout(scrollAboveKeyboard, 320);
+    }
+
+    function onFocus() {
+      window.visualViewport?.addEventListener("resize", handleViewportResize);
+    }
+
+    function onBlur() {
+      window.visualViewport?.removeEventListener("resize", handleViewportResize);
+    }
+
+    ta.addEventListener("focus", onFocus);
+    ta.addEventListener("blur", onBlur);
+    return () => {
+      ta.removeEventListener("focus", onFocus);
+      ta.removeEventListener("blur", onBlur);
+      window.visualViewport?.removeEventListener("resize", handleViewportResize);
+    };
+  }, []);
+
   function sendMessage(text: string) {
     if (!text.trim()) return;
     setMessages((prev) => [...prev, { id: nextId++, role: "user", text }]);
