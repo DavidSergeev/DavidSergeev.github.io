@@ -146,6 +146,12 @@ function Chat() {
     }
   }
 
+  function handleFocus() {
+    setTimeout(() => {
+      textareaRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }, 300);
+  }
+
   function handleInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setInput(e.target.value);
     const ta = textareaRef.current;
@@ -198,6 +204,7 @@ function Chat() {
           value={input}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
+          onFocus={handleFocus}
         />
         <button onClick={handleSend} disabled={!input.trim()} aria-label="Send">
           <svg viewBox="0 0 24 24" fill="currentColor">
