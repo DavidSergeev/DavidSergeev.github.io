@@ -147,9 +147,21 @@ function Chat() {
   }
 
   function handleFocus() {
-    setTimeout(() => {
-      textareaRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-    }, 300);
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const adjust = () => {
+      const ta = textareaRef.current;
+      if (!ta) return;
+      const rect = ta.getBoundingClientRect();
+      const gap = 16;
+      const overflow = rect.bottom - vv.height + gap;
+      if (overflow > 0) {
+        window.scrollBy({ top: overflow, behavior: "smooth" });
+      }
+    };
+
+    vv.addEventListener("resize", adjust, { once: true });
   }
 
   function handleInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
