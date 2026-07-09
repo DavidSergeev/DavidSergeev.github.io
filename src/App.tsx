@@ -146,22 +146,9 @@ function Chat() {
     }
   }
 
-  function handlePointerDown() {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    const rect = ta.getBoundingClientRect();
-    const targetBottom = window.innerHeight * 0.85;
-    const delta = rect.bottom - targetBottom;
-    if (Math.abs(delta) > 20) {
-      window.scrollBy({ top: delta, behavior: "smooth" });
-    }
-  }
-
   function handleFocus() {
     const vv = window.visualViewport;
     if (!vv) return;
-
-    let ignoreNextScroll = false;
 
     const onResize = () => {
       requestAnimationFrame(() => {
@@ -169,20 +156,11 @@ function Chat() {
         if (!ta) return;
         const rect = ta.getBoundingClientRect();
         const correction = rect.bottom - (vv.height - 28);
-        ignoreNextScroll = true;
         window.scrollTo({ top: window.scrollY + correction });
-        requestAnimationFrame(() => { ignoreNextScroll = false; });
       });
     };
 
-    const onScroll = () => {
-      if (ignoreNextScroll) return;
-      textareaRef.current?.blur();
-      window.removeEventListener("scroll", onScroll);
-    };
-
     vv.addEventListener("resize", onResize, { once: true });
-    window.addEventListener("scroll", onScroll, { passive: true });
   }
 
   function handleInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -237,7 +215,6 @@ function Chat() {
           value={input}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
-          onPointerDown={handlePointerDown}
           onFocus={handleFocus}
         />
         <button onClick={handleSend} disabled={!input.trim()} aria-label="Send">
