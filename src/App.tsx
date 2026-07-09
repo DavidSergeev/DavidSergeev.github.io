@@ -150,18 +150,17 @@ function Chat() {
     const vv = window.visualViewport;
     if (!vv) return;
 
-    const adjust = () => {
-      const ta = textareaRef.current;
-      if (!ta) return;
-      const rect = ta.getBoundingClientRect();
-      const gap = 16;
-      const overflow = rect.bottom - vv.height + gap;
-      if (overflow > 0) {
-        window.scrollBy({ top: overflow, behavior: "smooth" });
-      }
+    const onResize = () => {
+      requestAnimationFrame(() => {
+        const ta = textareaRef.current;
+        if (!ta) return;
+        const rect = ta.getBoundingClientRect();
+        const correction = rect.bottom - (vv.height - 16);
+        window.scrollTo({ top: window.scrollY + correction });
+      });
     };
 
-    vv.addEventListener("resize", adjust, { once: true });
+    vv.addEventListener("resize", onResize, { once: true });
   }
 
   function handleInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
