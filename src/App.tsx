@@ -11,6 +11,11 @@ interface Message {
   text: string;
 }
 
+// ── Config ───────────────────────────────────────────────────────────────────
+
+// Replace with the Lambda Function URL printed by `sam deploy`
+const LAMBDA_URL = import.meta.env.VITE_LAMBDA_URL as string;
+
 // ── Chat helpers ─────────────────────────────────────────────────────────────
 
 const INITIAL_MESSAGES: Message[] = [
@@ -47,14 +52,6 @@ const QUICK_ACTIONS: QuickAction[] = [
 ];
 
 let nextId = 2;
-
-const BOT_REPLIES = [
-  "David has 6+ years of experience in full-stack development, specialising in React and Node.js.",
-  "You can reach David at hello@alexdev.io or via the contact links below.",
-  "David is currently open to freelance projects and full-time opportunities.",
-  "His recent work includes SaaS dashboards, developer tools, and mobile-first web apps.",
-  "Feel free to browse the portfolio section or drop a message — David usually replies within a day.",
-];
 
 function TypingDots() {
   return (
@@ -106,17 +103,68 @@ function Chat() {
   }, [messages, isTyping]);
 
 
-  function sendMessage(text: string) {
+  async function sendMessage(text: string) {
     if (!text.trim()) return;
     setMessages((prev) => [...prev, { id: nextId++, role: "user", text }]);
     setInput("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
     setIsTyping(true);
-    setTimeout(() => {
-      const reply = BOT_REPLIES[Math.floor(Math.random() * BOT_REPLIES.length)];
-      setMessages((prev) => [...prev, { id: nextId++, role: "assistant", text: reply }]);
+
+    const assistantId = nextId++;
+
+    try {
+      const res = await fetch(LAMBDA_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: text }),
+      });
+
+      if (!res.ok || !res.body) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      // Add placeholder bubble — hidden until first token so typing dots show longer
       setIsTyping(false);
-    }, 1000 + Math.random() * 800);
+      setMessages((prev) => [...prev, { id: assistantId, role: "assistant", text: "" }]);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        // SSE events are separated by double newline
+        const events = buffer.split("\n\n");
+        buffer = events.pop() ?? "";
+
+        for (const event of events) {
+          if (!event.startsWith("data: ")) continue;
+          const payload = event.slice(6).trim();
+          if (payload === "[DONE]") break;
+          try {
+            const { token, error } = JSON.parse(payload);
+            if (error) throw new Error(error);
+            if (token) {
+              setMessages((prev) =>
+                prev.map((m) => m.id === assistantId ? { ...m, text: m.text + token } : m)
+              );
+            }
+          } catch {
+            // malformed chunk — skip
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Chat error:", err);
+      setIsTyping(false);
+      setMessages((prev) => [
+        ...prev,
+        { id: assistantId, role: "assistant", text: "Sorry, something went wrong. Please try again." },
+      ]);
+    }
   }
 
   function handleSend() {
