@@ -513,6 +513,18 @@ a {
   height: 32px;
 }
 
+.activity-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.activity-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
 .typing-dots {
   display: inline-flex;
   align-items: center;

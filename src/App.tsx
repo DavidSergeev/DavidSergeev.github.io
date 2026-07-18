@@ -14,7 +14,7 @@ interface Message {
 // ── Config ───────────────────────────────────────────────────────────────────
 
 // Replace with the Lambda Function URL printed by `sam deploy`
-const LAMBDA_URL = import.meta.env.VITE_LAMBDA_URL as string;
+const LAMBDA_URL = "https://xxxx.lambda-url.<region>.on.aws/";
 
 // ── Chat helpers ─────────────────────────────────────────────────────────────
 
@@ -53,6 +53,19 @@ const QUICK_ACTIONS: QuickAction[] = [
 
 let nextId = 2;
 
+// ── Streaming activity (tool calls in progress) ─────────────────────────────
+
+type Activity = { kind: "thinking" } | { kind: "acting"; tools: string[] };
+
+function formatToolLabel(name: string): string {
+  return name.replace(/_/g, " ");
+}
+
+function activityLabel(activity: Activity): string | null {
+  if (activity.kind === "thinking" || activity.tools.length === 0) return null;
+  return `Using ${activity.tools.map(formatToolLabel).join(", ")}…`;
+}
+
 function TypingDots() {
   return (
     <span className="typing-dots">
@@ -88,7 +101,7 @@ function BotIcon() {
 function Chat() {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
+  const [activity, setActivity] = useState<Activity | null>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const mountedRef = useRef(false);
@@ -100,17 +113,42 @@ function Chat() {
     }
     const el = messagesRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [messages, isTyping]);
+  }, [messages, activity]);
 
+  function markToolActive(tool: string) {
+    if (!tool) return;
+    setActivity((prev) => {
+      const tools = prev && prev.kind === "acting" ? prev.tools : [];
+      return tools.includes(tool) ? { kind: "acting", tools } : { kind: "acting", tools: [...tools, tool] };
+    });
+  }
 
   async function sendMessage(text: string) {
     if (!text.trim()) return;
     setMessages((prev) => [...prev, { id: nextId++, role: "user", text }]);
     setInput("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
-    setIsTyping(true);
+    setActivity({ kind: "thinking" });
 
     const assistantId = nextId++;
+    let assistantStarted = false;
+
+    // Lazily inserts the assistant bubble the first time real answer text arrives,
+    // so the activity indicator (thinking / using tool X) stays visible until then.
+    function ensureAssistantMessage() {
+      if (assistantStarted) return;
+      assistantStarted = true;
+      setActivity(null);
+      setMessages((prev) => [...prev, { id: assistantId, role: "assistant", text: "" }]);
+    }
+
+    function appendAnswerToken(token: string) {
+      if (!token) return;
+      ensureAssistantMessage();
+      setMessages((prev) =>
+        prev.map((m) => (m.id === assistantId ? { ...m, text: m.text + token } : m))
+      );
+    }
 
     try {
       const res = await fetch(LAMBDA_URL, {
@@ -122,10 +160,6 @@ function Chat() {
       if (!res.ok || !res.body) {
         throw new Error(`HTTP ${res.status}`);
       }
-
-      // Add placeholder bubble — hidden until first token so typing dots show longer
-      setIsTyping(false);
-      setMessages((prev) => [...prev, { id: assistantId, role: "assistant", text: "" }]);
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -144,24 +178,35 @@ function Chat() {
           if (!event.startsWith("data: ")) continue;
           const payload = event.slice(6).trim();
           if (payload === "[DONE]") break;
+
+          let frame: { type?: string; token?: string; tool?: string; tools_invocation?: string[]; error?: string };
           try {
-            const { token, error } = JSON.parse(payload);
-            if (error) throw new Error(error);
-            if (token) {
-              setMessages((prev) =>
-                prev.map((m) => m.id === assistantId ? { ...m, text: m.text + token } : m)
-              );
-            }
+            frame = JSON.parse(payload);
           } catch {
-            // malformed chunk — skip
+            continue; // malformed chunk — skip
+          }
+          if (frame.error) throw new Error(frame.error);
+
+          switch (frame.type) {
+            case "answer":
+              appendAnswerToken(frame.token ?? "");
+              break;
+            case "acting":
+              if (frame.tool) markToolActive(frame.tool);
+              break;
+            case "act":
+              (frame.tools_invocation ?? []).forEach(markToolActive);
+              break;
+            default:
+              break;
           }
         }
       }
     } catch (err) {
       console.error("Chat error:", err);
-      setIsTyping(false);
+      setActivity(null);
       setMessages((prev) => [
-        ...prev,
+        ...prev.filter((m) => m.id !== assistantId),
         { id: assistantId, role: "assistant", text: "Sorry, something went wrong. Please try again." },
       ]);
     }
@@ -247,10 +292,13 @@ function Chat() {
             </div>
           )
         )}
-        {isTyping && (
+        {activity && (
           <div className="msg-row assistant">
             <BotIcon />
-            <div className="msg-bubble assistant"><TypingDots /></div>
+            <div className="msg-bubble assistant activity-bubble">
+              {activityLabel(activity) && <span className="activity-label">{activityLabel(activity)}</span>}
+              <TypingDots />
+            </div>
           </div>
         )}
       </div>
