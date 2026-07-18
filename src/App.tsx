@@ -179,7 +179,7 @@ function Chat() {
           const payload = event.slice(6).trim();
           if (payload === "[DONE]") break;
 
-          let frame: { type?: string; token?: string; tool?: string; tools_invocation?: string[]; error?: string };
+          let frame: { type?: string; token?: string; tool?: string; error?: string };
           try {
             frame = JSON.parse(payload);
           } catch {
@@ -193,9 +193,6 @@ function Chat() {
               break;
             case "acting":
               if (frame.tool) markToolActive(frame.tool);
-              break;
-            case "act":
-              (frame.tools_invocation ?? []).forEach(markToolActive);
               break;
             default:
               break;
