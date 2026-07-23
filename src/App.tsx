@@ -55,15 +55,17 @@ let nextId = 2;
 
 // ── Streaming activity (tool calls in progress) ─────────────────────────────
 
-type Activity = { kind: "thinking" } | { kind: "acting"; tools: string[] };
+// `tool` is one or more tool names joined by " -> " by the backend (see react_agent.py).
+type Activity = { kind: "thinking" } | { kind: "acting"; tool: string };
 
 function formatToolLabel(name: string): string {
   return name.replace(/_/g, " ");
 }
 
 function activityLabel(activity: Activity): string | null {
-  if (activity.kind === "thinking" || activity.tools.length === 0) return null;
-  return `Using ${activity.tools.map(formatToolLabel).join(", ")}…`;
+  if (activity.kind === "thinking") return null;
+  const tools = activity.tool.split(" -> ").map(formatToolLabel).join(" -> ");
+  return `Using ${tools}…`;
 }
 
 function TypingDots() {
@@ -114,14 +116,6 @@ function Chat() {
     const el = messagesRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, activity]);
-
-  function markToolActive(tool: string) {
-    if (!tool) return;
-    setActivity((prev) => {
-      const tools = prev && prev.kind === "acting" ? prev.tools : [];
-      return tools.includes(tool) ? { kind: "acting", tools } : { kind: "acting", tools: [...tools, tool] };
-    });
-  }
 
   async function sendMessage(text: string) {
     if (!text.trim()) return;
@@ -192,7 +186,7 @@ function Chat() {
               appendAnswerToken(frame.token ?? "");
               break;
             case "acting":
-              if (frame.tool) markToolActive(frame.tool);
+              if (frame.tool) setActivity({ kind: "acting", tool: frame.tool });
               break;
             default:
               break;
