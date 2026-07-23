@@ -14,7 +14,7 @@ interface Message {
 // ── Config ───────────────────────────────────────────────────────────────────
 
 // Replace with the Lambda Function URL printed by `sam deploy`
-const LAMBDA_URL = "https://scha4nxp6ayxyo7rdwvjeq32za0rdkzf.lambda-url.eu-south-1.on.aws/";
+const LAMBDA_URL = "https://u3jss62ij45ynihyrjkhicqoam0ujzzm.lambda-url.eu-south-1.on.aws/";
 
 // ── Chat helpers ─────────────────────────────────────────────────────────────
 
