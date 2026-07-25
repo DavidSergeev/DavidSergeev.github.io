@@ -177,7 +177,7 @@ a {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: calc(100dvh - 64px);
+  min-height: calc(100svh - 64px);
   padding: clamp(48px, 8vh, 96px) clamp(20px, 5vw, 60px);
 }
 
@@ -276,7 +276,7 @@ a {
 
 .section {
   padding: clamp(60px, 8vh, 100px) clamp(20px, 5vw, 60px);
-  min-height: calc(100dvh - 64px);
+  min-height: calc(100svh - 64px);
   display: flex;
   flex-direction: column;
   justify-content: center;
