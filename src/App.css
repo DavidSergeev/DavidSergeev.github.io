@@ -731,12 +731,14 @@ a {
 }
 
 /* ── Chat launcher (left edge) ────────────────── */
+/* Anchored from the bottom (not vertically centered) so it lines up with the
+   "back to top" button on the right and doesn't jump when mobile browsers
+   resize the visual viewport (e.g. address bar show/hide) on scroll. */
 .chat-launcher {
   position: fixed;
-  top: 50%;
+  bottom: 36px;
   left: 24px;
   z-index: 250;
-  transform: translateY(-50%);
   width: 52px;
   height: 52px;
   border-radius: 50%;
@@ -753,12 +755,12 @@ a {
 
 .chat-launcher:hover {
   background: #7d75ff;
-  transform: translateY(-50%) scale(1.06);
+  transform: scale(1.06);
 }
 
 .chat-launcher.hidden {
   opacity: 0;
-  transform: translateY(-50%) scale(0.85);
+  transform: scale(0.85);
   pointer-events: none;
 }
 
@@ -929,6 +931,7 @@ a {
 
   .chat-launcher {
     left: 16px;
+    bottom: 39px;
     width: 46px;
     height: 46px;
   }
