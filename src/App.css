@@ -976,6 +976,15 @@ a {
     border-radius: 0;
   }
 
+  /* When the on-screen keyboard is open and the user scrolls .chat-messages
+     away from the bottom, typing a key makes the browser auto-scroll the
+     focused textarea back into view. scroll-margin-bottom reserves a few
+     extra pixels below it for that calculation, so it settles a little
+     higher instead of sitting flush against the bottom edge/keyboard. */
+  .chat-input-bar {
+    scroll-margin-bottom: 16px;
+  }
+
   /* Skills: 2-column grid on mobile, smaller cards */
   .skills-grid {
     grid-template-columns: repeat(2, 1fr);
