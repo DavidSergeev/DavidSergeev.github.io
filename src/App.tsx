@@ -346,10 +346,21 @@ function ChatModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   );
 }
 
-function ChatLauncher({ hidden, onOpen }: { hidden: boolean; onOpen: () => void }) {
+function ChatLauncher({
+  hidden,
+  pinned,
+  pinnedTop,
+  onOpen,
+}: {
+  hidden: boolean;
+  pinned: boolean;
+  pinnedTop: number;
+  onOpen: () => void;
+}) {
   return (
     <button
-      className={`chat-launcher ${hidden ? "hidden" : ""}`}
+      className={`chat-launcher ${hidden ? "hidden" : ""} ${pinned ? "pinned" : ""}`}
+      style={pinned ? { top: `${pinnedTop}px` } : undefined}
       onClick={onOpen}
       aria-label="Open chat with Smitty"
       aria-hidden={hidden}
@@ -460,20 +471,58 @@ const WORKS = [
   { title: "E-commerce Redesign", desc: "Full UX overhaul that improved conversion rate by 34%.", tag: "Design" },
 ];
 
-function ScrollToTop() {
+// ── Scroll-pinned floating buttons ──────────────────────────────────────────
+// Both the "back to top" and chat launcher buttons are `position: fixed`
+// (glued to the viewport) until the user scrolls past PIN_SCROLL_THRESHOLD of
+// the page. From that point on they switch to `position: absolute`, pinned to
+// the exact document Y they were at when the threshold was crossed, so they
+// stop following the viewport for the remaining scroll and instead sit still
+// on the page (sharing the same row so both buttons line up).
+
+const PIN_SCROLL_THRESHOLD = 0.97;
+const PIN_BOTTOM_OFFSET = 40;
+const PIN_ROW_HEIGHT = 44;
+
+interface ScrollPin {
+  pinned: boolean;
+  top: number;
+}
+
+function useScrollPin(): ScrollPin {
+  const [pin, setPin] = useState<ScrollPin>({ pinned: false, top: 0 });
+
+  useEffect(() => {
+    function onScroll() {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      if (progress >= PIN_SCROLL_THRESHOLD) {
+        const scrollYAtThreshold = PIN_SCROLL_THRESHOLD * maxScroll;
+        const top = scrollYAtThreshold + window.innerHeight - PIN_BOTTOM_OFFSET - PIN_ROW_HEIGHT;
+        setPin((prev) => (prev.pinned && prev.top === top ? prev : { pinned: true, top }));
+      } else {
+        setPin((prev) => (prev.pinned ? { pinned: false, top: 0 } : prev));
+      }
+    }
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  return pin;
+}
+
+function ScrollToTop({ pinned, pinnedTop }: { pinned: boolean; pinnedTop: number }) {
   const [visible, setVisible] = useState(false);
-  const [bottom, setBottom] = useState(40);
 
   useEffect(() => {
     function onScroll() {
       setVisible(window.scrollY > 10);
-      const footer = document.querySelector<HTMLElement>(".site-footer");
-      if (footer) {
-        const footerTop = footer.getBoundingClientRect().top;
-        const overlap = window.innerHeight - footerTop;
-        setBottom(overlap > 0 ? overlap + 16 : 40);
-      }
     }
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -484,8 +533,8 @@ function ScrollToTop() {
 
   return (
     <button
-      className={`scroll-top-btn ${visible ? "visible" : ""}`}
-      style={{ bottom: `${bottom}px` }}
+      className={`scroll-top-btn ${visible ? "visible" : ""} ${pinned ? "pinned" : ""}`}
+      style={pinned ? { top: `${pinnedTop}px` } : undefined}
       onClick={scrollTop}
       aria-label="Back to top"
     >
@@ -499,6 +548,7 @@ function ScrollToTop() {
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const { pinned, top: pinnedTop } = useScrollPin();
 
   function openChat() {
     setMenuOpen(false);
@@ -592,8 +642,8 @@ export default function App() {
         </div>
       </footer>
 
-      <ScrollToTop />
-      <ChatLauncher hidden={chatOpen} onOpen={openChat} />
+      <ScrollToTop pinned={pinned} pinnedTop={pinnedTop} />
+      <ChatLauncher hidden={chatOpen} pinned={pinned} pinnedTop={pinnedTop} onOpen={openChat} />
       <ChatModal open={chatOpen} onClose={() => setChatOpen(false)} />
     </>
   );
