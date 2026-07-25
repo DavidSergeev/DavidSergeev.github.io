@@ -693,7 +693,7 @@ a {
 /* ── Scroll-to-top button ────────────────────── */
 .scroll-top-btn {
   position: fixed;
-  bottom: 40px;
+  bottom: 60px;
   right: 32px;
   z-index: 300;
   width: 44px;
@@ -730,7 +730,7 @@ a {
   height: 18px;
 }
 
-/* Past 97% of the page, the button stops following the viewport and is
+/* Past 95% of the page, the button stops following the viewport and is
    pinned to that exact document position instead. */
 .scroll-top-btn.pinned {
   position: absolute;
@@ -743,7 +743,7 @@ a {
    resize the visual viewport (e.g. address bar show/hide) on scroll. */
 .chat-launcher {
   position: fixed;
-  bottom: 36px;
+  bottom: 56px;
   left: 24px;
   z-index: 250;
   width: 52px;
@@ -771,7 +771,7 @@ a {
   pointer-events: none;
 }
 
-/* Past 97% of the page, mirrors .scroll-top-btn.pinned so both buttons sit
+/* Past 95% of the page, mirrors .scroll-top-btn.pinned so both buttons sit
    on the same row instead of following the viewport. */
 .chat-launcher.pinned {
   position: absolute;
@@ -980,7 +980,7 @@ a {
 
   .chat-launcher {
     left: 16px;
-    bottom: 39px;
+    bottom: 59px;
     width: 46px;
     height: 46px;
   }

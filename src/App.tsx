@@ -484,7 +484,7 @@ const WORKS = [
 // `bottom`/`height` as magic numbers here, so it automatically stays correct
 // across breakpoints, zoom levels, or future CSS tweaks.
 
-const PIN_SCROLL_THRESHOLD = 0.97;
+const PIN_SCROLL_THRESHOLD = 0.95;
 
 interface ScrollPin {
   pinned: boolean;
