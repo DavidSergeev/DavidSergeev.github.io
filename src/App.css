@@ -922,11 +922,27 @@ a {
 
   .chat-quick-btns {
     width: 100%;
+    /* Pushed down together with .chat-messages so this whole block hugs the
+       input bar instead of sitting pinned to the top. Any leftover vertical
+       space collapses above it (see .chat-messages below), which keeps the
+       gap to the input bar small when there's little content, while still
+       letting the conversation grow/scroll normally once it fills the space.
+       This matters most when the on-screen keyboard opens: less unused
+       space between the top content and the input bar means less of it
+       gets scrolled out of view while the browser brings the input into
+       view above the keyboard. */
+    margin-top: auto;
   }
 
   .quick-btn {
     min-width: 0;
     flex: 1 1 auto;
+  }
+
+  .chat-messages {
+    /* On mobile, size to content instead of always stretching to fill the
+       remaining space — pairs with .chat-quick-btns' margin-top: auto above. */
+    flex: 0 1 auto;
   }
 
   .chat-launcher {
