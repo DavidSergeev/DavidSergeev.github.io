@@ -880,13 +880,25 @@ a {
 }
 
 @keyframes chatFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes chatModalPop {
-  from { opacity: 0; transform: translateY(10px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* ── Responsive ──────────────────────────────── */
@@ -996,7 +1008,7 @@ a {
      extra pixels below it for that calculation, so it settles a little
      higher instead of sitting flush against the bottom edge/keyboard. */
   .chat-input-bar {
-    scroll-margin-bottom: 16px;
+    scroll-margin-bottom: 32px;
   }
 
   /* Skills: 2-column grid on mobile, smaller cards */

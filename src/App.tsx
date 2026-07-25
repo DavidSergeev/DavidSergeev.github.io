@@ -478,17 +478,20 @@ const WORKS = [
 // the exact document Y they were at when the threshold was crossed, so they
 // stop following the viewport for the remaining scroll and instead sit still
 // on the page (sharing the same row so both buttons line up).
+//
+// The row's Y position is measured from the "back to top" button's actual
+// (still `fixed`) `getBoundingClientRect()` rather than duplicating its CSS
+// `bottom`/`height` as magic numbers here, so it automatically stays correct
+// across breakpoints, zoom levels, or future CSS tweaks.
 
 const PIN_SCROLL_THRESHOLD = 0.97;
-const PIN_BOTTOM_OFFSET = 40;
-const PIN_ROW_HEIGHT = 44;
 
 interface ScrollPin {
   pinned: boolean;
   top: number;
 }
 
-function useScrollPin(): ScrollPin {
+function useScrollPin(anchorRef: React.RefObject<HTMLElement | null>): ScrollPin {
   const [pin, setPin] = useState<ScrollPin>({ pinned: false, top: 0 });
 
   useEffect(() => {
@@ -496,9 +499,16 @@ function useScrollPin(): ScrollPin {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
       if (progress >= PIN_SCROLL_THRESHOLD) {
-        const scrollYAtThreshold = PIN_SCROLL_THRESHOLD * maxScroll;
-        const top = scrollYAtThreshold + window.innerHeight - PIN_BOTTOM_OFFSET - PIN_ROW_HEIGHT;
-        setPin((prev) => (prev.pinned && prev.top === top ? prev : { pinned: true, top }));
+        setPin((prev) => {
+          if (prev.pinned) return prev; // already frozen — leave the row where it is
+          const anchor = anchorRef.current;
+          if (!anchor) return prev;
+          const scrollYAtThreshold = PIN_SCROLL_THRESHOLD * maxScroll;
+          // Anchor is still `fixed` here, so its rect.top is viewport-relative
+          // and constant regardless of the current scroll position.
+          const top = scrollYAtThreshold + anchor.getBoundingClientRect().top;
+          return { pinned: true, top };
+        });
       } else {
         setPin((prev) => (prev.pinned ? { pinned: false, top: 0 } : prev));
       }
@@ -510,12 +520,20 @@ function useScrollPin(): ScrollPin {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, []);
+  }, [anchorRef]);
 
   return pin;
 }
 
-function ScrollToTop({ pinned, pinnedTop }: { pinned: boolean; pinnedTop: number }) {
+function ScrollToTop({
+  pinned,
+  pinnedTop,
+  anchorRef,
+}: {
+  pinned: boolean;
+  pinnedTop: number;
+  anchorRef: React.RefObject<HTMLButtonElement | null>;
+}) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -533,6 +551,7 @@ function ScrollToTop({ pinned, pinnedTop }: { pinned: boolean; pinnedTop: number
 
   return (
     <button
+      ref={anchorRef}
       className={`scroll-top-btn ${visible ? "visible" : ""} ${pinned ? "pinned" : ""}`}
       style={pinned ? { top: `${pinnedTop}px` } : undefined}
       onClick={scrollTop}
@@ -548,7 +567,8 @@ function ScrollToTop({ pinned, pinnedTop }: { pinned: boolean; pinnedTop: number
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
-  const { pinned, top: pinnedTop } = useScrollPin();
+  const scrollTopBtnRef = useRef<HTMLButtonElement>(null);
+  const { pinned, top: pinnedTop } = useScrollPin(scrollTopBtnRef);
 
   function openChat() {
     setMenuOpen(false);
@@ -642,7 +662,7 @@ export default function App() {
         </div>
       </footer>
 
-      <ScrollToTop pinned={pinned} pinnedTop={pinnedTop} />
+      <ScrollToTop pinned={pinned} pinnedTop={pinnedTop} anchorRef={scrollTopBtnRef} />
       <ChatLauncher hidden={chatOpen} pinned={pinned} pinnedTop={pinnedTop} onOpen={openChat} />
       <ChatModal open={chatOpen} onClose={() => setChatOpen(false)} />
     </>
