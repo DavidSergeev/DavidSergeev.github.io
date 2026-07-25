@@ -941,8 +941,15 @@ a {
 
   .chat-messages {
     /* On mobile, size to content instead of always stretching to fill the
-       remaining space — pairs with .chat-quick-btns' margin-top: auto above. */
+       remaining space — pairs with .chat-quick-btns' margin-top: auto above.
+       min-height is a % of .chat-embed's own (already keyboard-aware) height,
+       so it reserves a decent amount of room for history — which in turn
+       leaves less leftover space for the margin-top: auto above, nudging the
+       quick actions up away from the input bar — while still shrinking
+       proportionally (never past the input bar) if the keyboard eats into
+       the available height. */
     flex: 0 1 auto;
+    min-height: 38%;
   }
 
   .chat-launcher {
