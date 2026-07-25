@@ -119,6 +119,24 @@ a {
   color: var(--text);
 }
 
+.nav-link-btn {
+  font: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.nav-link-btn:hover {
+  color: var(--text);
+}
+
+.site-nav .nav-link-btn {
+  font-size: 0.875rem;
+}
+
 .btn-hire {
   background: var(--accent) !important;
   color: #fff !important;
@@ -157,17 +175,30 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  gap: 36px;
+  justify-content: center;
   width: 100%;
   min-height: calc(100dvh - 64px);
-  padding: clamp(48px, 8vh, 96px) clamp(20px, 5vw, 60px) clamp(48px, 6vh, 80px);
+  padding: clamp(48px, 8vh, 96px) clamp(20px, 5vw, 60px);
 }
 
 .hero-intro {
   text-align: center;
   max-width: 560px;
-  margin-bottom: 19vh;
+}
+
+.hero-chat-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 28px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.hero-chat-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 .hero-subtitle {
@@ -408,26 +439,24 @@ a {
   color: var(--text);
 }
 
-/* ── Embedded chat ───────────────────────────── */
+/* ── Chat (modal contents) ───────────────────── */
 .chat-embed {
-  width: min(80%, 760px);
-  margin-inline: auto;
-  margin-top: -3vh;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
 .chat-messages {
-  height: 260px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-top: 56px;
   padding-right: 4px;
-  mask-image: linear-gradient(to bottom, transparent 0%, black 56px);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 56px);
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -701,12 +730,151 @@ a {
   height: 18px;
 }
 
+/* ── Chat launcher (left edge) ────────────────── */
+.chat-launcher {
+  position: fixed;
+  top: 50%;
+  left: 24px;
+  z-index: 250;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 24px rgba(108, 99, 255, 0.45);
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s;
+}
+
+.chat-launcher:hover {
+  background: #7d75ff;
+  transform: translateY(-50%) scale(1.06);
+}
+
+.chat-launcher.hidden {
+  opacity: 0;
+  transform: translateY(-50%) scale(0.85);
+  pointer-events: none;
+}
+
+.chat-launcher svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* ── Chat modal ────────────────────────────────── */
+.chat-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(3, 3, 9, 0.72);
+  backdrop-filter: blur(4px);
+  animation: chatFadeIn 0.18s ease;
+}
+
+.chat-modal-panel {
+  width: min(680px, 100%);
+  height: min(720px, 85vh);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+  animation: chatModalPop 0.22s ease;
+}
+
+.chat-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.chat-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-modal-title .bot-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.chat-modal-title .bot-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.chat-modal-title div {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.chat-modal-title strong {
+  font-size: 0.9rem;
+}
+
+.chat-modal-title span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.chat-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.chat-modal-close:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.chat-modal-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.chat-modal-panel .chat-embed {
+  padding: 14px 18px 18px;
+}
+
+@keyframes chatFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes chatModalPop {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 /* ── Responsive ──────────────────────────────── */
 @media (max-width: 700px) {
-  .chat-embed {
-    width: 100%;
-  }
-
   .site-nav {
     display: none;
     position: absolute;
@@ -724,7 +892,11 @@ a {
     display: flex;
   }
 
-  .site-nav a {
+  .site-nav a,
+  .site-nav .nav-link-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
     padding: 12px 24px;
     font-size: 0.95rem;
   }
@@ -733,44 +905,17 @@ a {
     display: flex;
   }
 
-  .chat-panel {
-    width: calc(100vw - 40px);
-  }
-
-  .chat-widget {
-    bottom: 16px;
-    right: 16px;
-  }
-
   .site-footer {
     justify-content: center;
     text-align: center;
   }
 
   .hero {
-    min-height: auto;
     padding: 32px 18px 36px;
-    justify-content: flex-start;
-    align-items: stretch;
   }
 
   .hero-intro {
-    margin-bottom: 1.5rem;
     max-width: 100%;
-  }
-
-  .chat-embed {
-    width: 100%;
-    max-width: 100%;
-    margin-top: 0;
-  }
-
-  .chat-input-bar {
-    min-width: 0;
-  }
-
-  .chat-input-bar textarea {
-    min-width: 0;
   }
 
   .chat-quick-btns {
@@ -782,8 +927,27 @@ a {
     flex: 1 1 auto;
   }
 
-  .chat-messages {
-    height: 220px;
+  .chat-launcher {
+    left: 16px;
+    width: 46px;
+    height: 46px;
+  }
+
+  .chat-launcher svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .chat-modal-backdrop {
+    padding: 0;
+  }
+
+  .chat-modal-panel {
+    width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border: none;
+    border-radius: 0;
   }
 
   /* Skills: 2-column grid on mobile, smaller cards */

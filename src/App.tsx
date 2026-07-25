@@ -76,6 +76,14 @@ function TypingDots() {
   );
 }
 
+function ChatBubbleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    </svg>
+  );
+}
+
 function BotIcon() {
   return (
     <div className="bot-icon">
@@ -230,23 +238,6 @@ function Chat() {
     }
   }
 
-  function handleFocus() {
-    const vv = window.visualViewport;
-    if (!vv) return;
-
-    const onResize = () => {
-      requestAnimationFrame(() => {
-        const ta = textareaRef.current;
-        if (!ta) return;
-        const rect = ta.getBoundingClientRect();
-        const correction = rect.bottom - (vv.height - 28);
-        window.scrollTo({ top: window.scrollY + correction });
-      });
-    };
-
-    vv.addEventListener("resize", onResize, { once: true });
-  }
-
   function handleInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setInput(e.target.value);
     const ta = textareaRef.current;
@@ -302,7 +293,6 @@ function Chat() {
           value={input}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
-          onFocus={handleFocus}
         />
         <button onClick={handleSend} disabled={!input.trim()} aria-label="Send">
           <svg viewBox="0 0 24 24" fill="currentColor">
@@ -311,6 +301,62 @@ function Chat() {
         </button>
       </div>
     </div>
+  );
+}
+
+// ── Chat modal + launcher ────────────────────────────────────────────────────
+
+function ChatModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return (
+    <div className="chat-modal-backdrop" onClick={onClose}>
+      <div className="chat-modal-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="chat-modal-header">
+          <div className="chat-modal-title">
+            <BotIcon />
+            <div>
+              <strong>Smitty</strong>
+              <span>David's AI agent</span>
+            </div>
+          </div>
+          <button className="chat-modal-close" onClick={onClose} aria-label="Close chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </div>
+        <Chat />
+      </div>
+    </div>
+  );
+}
+
+function ChatLauncher({ hidden, onOpen }: { hidden: boolean; onOpen: () => void }) {
+  return (
+    <button
+      className={`chat-launcher ${hidden ? "hidden" : ""}`}
+      onClick={onOpen}
+      aria-label="Open chat with Smitty"
+      aria-hidden={hidden}
+      tabIndex={hidden ? -1 : 0}
+    >
+      <ChatBubbleIcon />
+    </button>
   );
 }
 
@@ -369,6 +415,36 @@ function handleNavClick(e: React.MouseEvent<HTMLAnchorElement>): void {
 
 const NAV_LINKS = ["Agent", "Skills", "Work", "Contact"];
 
+/** "Agent" opens the chat modal instead of scrolling to a section. */
+function NavLink({
+  label,
+  className,
+  onOpenChat,
+  onNavigate,
+}: {
+  label: string;
+  className?: string;
+  onOpenChat: () => void;
+  onNavigate?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+}) {
+  if (label === "Agent") {
+    return (
+      <button type="button" className={`nav-link-btn ${className ?? ""}`} onClick={onOpenChat}>
+        {label}
+      </button>
+    );
+  }
+  return (
+    <a
+      href={`#${label.toLowerCase()}`}
+      className={className}
+      onClick={(e) => (onNavigate ? onNavigate(e) : handleNavClick(e))}
+    >
+      {label}
+    </a>
+  );
+}
+
 const SKILLS = [
   { icon: "⚛️", label: "React & TypeScript" },
   { icon: "🟢", label: "Node.js & APIs" },
@@ -422,6 +498,12 @@ function ScrollToTop() {
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+
+  function openChat() {
+    setMenuOpen(false);
+    setChatOpen(true);
+  }
 
   return (
     <>
@@ -430,7 +512,12 @@ export default function App() {
         <a href="#" className="logo" onClick={handleNavClick}>David<span>Dev</span></a>
         <nav className={`site-nav ${menuOpen ? "open" : ""}`}>
           {NAV_LINKS.map((l) => (
-            <a key={l} href={`#${l.toLowerCase()}`} onClick={(e) => { setMenuOpen(false); handleNavClick(e); }}>{l}</a>
+            <NavLink
+              key={l}
+              label={l}
+              onOpenChat={openChat}
+              onNavigate={(e) => { setMenuOpen(false); handleNavClick(e); }}
+            />
           ))}
           <a href="#contact" className="btn-hire" onClick={(e) => { setMenuOpen(false); handleNavClick(e); }}>Hire me</a>
         </nav>
@@ -445,8 +532,11 @@ export default function App() {
           <div className="hero-intro">
             <h1>Talk to <span>David's</span> Agent</h1>
             <p className="hero-subtitle">Smitty the AI agent</p>
+            <button className="btn-primary hero-chat-btn" onClick={openChat}>
+              <ChatBubbleIcon />
+              Start chatting
+            </button>
           </div>
-          <Chat />
         </section>
 
         {/* ── Skills ── */}
@@ -497,12 +587,14 @@ export default function App() {
         <p>© 2026 DavidDev. Designed & built with care.</p>
         <div className="footer-links">
           {NAV_LINKS.map((l) => (
-            <a key={l} href={`#${l.toLowerCase()}`} onClick={handleNavClick}>{l}</a>
+            <NavLink key={l} label={l} onOpenChat={openChat} />
           ))}
         </div>
       </footer>
 
       <ScrollToTop />
+      <ChatLauncher hidden={chatOpen} onOpen={openChat} />
+      <ChatModal open={chatOpen} onClose={() => setChatOpen(false)} />
     </>
   );
 }
