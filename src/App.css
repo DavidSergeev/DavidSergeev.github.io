@@ -693,7 +693,7 @@ a {
 /* ── Scroll-to-top button ────────────────────── */
 .scroll-top-btn {
   position: fixed;
-  bottom: 60px;
+  bottom: 50px;
   right: 32px;
   z-index: 300;
   width: 44px;
@@ -743,7 +743,7 @@ a {
    resize the visual viewport (e.g. address bar show/hide) on scroll. */
 .chat-launcher {
   position: fixed;
-  bottom: 56px;
+  bottom: 46px;
   left: 24px;
   z-index: 250;
   width: 52px;
@@ -980,7 +980,7 @@ a {
 
   .chat-launcher {
     left: 16px;
-    bottom: 59px;
+    bottom: 49px;
     width: 46px;
     height: 46px;
   }
