@@ -491,6 +491,9 @@ const WORKS = [
 // taller button's center sitting a few pixels lower than the other's.
 
 const PIN_SCROLL_THRESHOLD = 0.95;
+// Extra downward nudge applied once pinned, so the row sits a bit lower than
+// where the buttons naturally were while still `fixed`.
+const PIN_ROW_EXTRA_OFFSET = 24;
 
 interface ScrollPin {
   pinned: boolean;
@@ -519,7 +522,7 @@ function useScrollPin(
           // and constant regardless of the current scroll position.
           const primaryRect = primary.getBoundingClientRect();
           const secondaryRect = secondary.getBoundingClientRect();
-          const primaryTop = scrollYAtThreshold + primaryRect.top;
+          const primaryTop = scrollYAtThreshold + primaryRect.top + PIN_ROW_EXTRA_OFFSET;
           const centerY = primaryTop + primaryRect.height / 2;
           const secondaryTop = centerY - secondaryRect.height / 2;
           return { pinned: true, primaryTop, secondaryTop };
