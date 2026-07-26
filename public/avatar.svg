@@ -1,6 +1,6 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#C1E8F7;}
+	.st0{fill:url(#bgGradient);}
 	.st1{fill:none;}
 	.st2{fill:#FFDDCA;}
 	.st3{fill:#D9D9D9;}
@@ -13,6 +13,13 @@
 	.st10{fill:#051005;}
 	.st11{fill:#030C04;}
 </style>
+<defs>
+	<linearGradient id="bgGradient" x1="0" y1="0" x2="0" y2="1">
+		<stop offset="0%" stop-color="#c4b5fd"></stop>
+		<stop offset="55%" stop-color="#7c6cf0"></stop>
+		<stop offset="100%" stop-color="#1a1330"></stop>
+	</linearGradient>
+</defs>
 <circle id="XMLID_8234_" class="st0" cx="256.0887" cy="255.7101" r="249.4083"></circle>
 <g id="XMLID_7856_">
 	<path id="XMLID_7872_" class="st1" d="M320.5496,319.1732c0.5063,0.4907,0.9806,0.9654,1.4112,1.3871
