@@ -15,6 +15,8 @@ interface Message {
 
 // Replace with the Lambda Function URL printed by `sam deploy`
 const LAMBDA_URL = "https://u3jss62ij45ynihyrjkhicqoam0ujzzm.lambda-url.eu-south-1.on.aws/";
+// Direct (non-chat) endpoint backing the "Hire me" modal — see POST /schedule-meeting in main.py
+const SCHEDULE_MEETING_URL = `${LAMBDA_URL}schedule-meeting`;
 
 // ── Chat helpers ─────────────────────────────────────────────────────────────
 
@@ -41,7 +43,7 @@ const QUICK_ACTIONS: QuickAction[] = [
   },
   {
     label: "Schedule meeting with David",
-    text: "I'd like to schedule a meeting with David. My contact details and preferred date: ",
+    text: "I'd like to schedule a meeting with David.\nContact: \nDate: \nDescription: ",
     autoSend: false,
   },
   {
@@ -346,6 +348,132 @@ function ChatModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   );
 }
 
+// ── Hire modal (schedule-meeting form) ───────────────────────────────────────
+
+type HireStatus = "idle" | "submitting" | "success" | "error";
+
+function HireModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [email, setEmail] = useState("");
+  const [date, setDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [status, setStatus] = useState<HireStatus>("idle");
+
+  useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open, onClose]);
+
+  // Reset to a blank form every time the modal is (re)opened.
+  useEffect(() => {
+    if (!open) return;
+    setEmail("");
+    setDate("");
+    setDescription("");
+    setStatus("idle");
+  }, [open]);
+
+  if (!open) return null;
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email.trim() || !date || !description.trim() || status === "submitting") return;
+    setStatus("submitting");
+    try {
+      const res = await fetch(SCHEDULE_MEETING_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          attendee_email: email.trim(),
+          scheduled_at: new Date(date).toISOString(),
+          description: description.trim(),
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setStatus("success");
+    } catch (err) {
+      console.error("Schedule meeting error:", err);
+      setStatus("error");
+    }
+  }
+
+  return (
+    <div className="chat-modal-backdrop" onClick={onClose}>
+      <div className="hire-modal-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="chat-modal-header">
+          <div className="chat-modal-title">
+            <div>
+              <strong>Schedule a meeting</strong>
+              <span>Tell David a bit about your project</span>
+            </div>
+          </div>
+          <button className="chat-modal-close" onClick={onClose} aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </div>
+
+        {status === "success" ? (
+          <div className="hire-success">
+            <p>Thanks! Your meeting request was sent — David will follow up by email.</p>
+            <button className="btn-primary" onClick={onClose}>Close</button>
+          </div>
+        ) : (
+          <form className="hire-form" onSubmit={handleSubmit}>
+            <label className="form-field">
+              <span className="form-label">Email</span>
+              <input
+                type="email"
+                className="form-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+              />
+            </label>
+            <label className="form-field">
+              <span className="form-label">Date</span>
+              <input
+                type="datetime-local"
+                className="form-input"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
+            </label>
+            <label className="form-field">
+              <span className="form-label">Description</span>
+              <textarea
+                className="form-input form-textarea"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="What would you like to talk about?"
+                rows={4}
+                required
+              />
+            </label>
+            {status === "error" && (
+              <p className="form-error">Something went wrong. Please try again.</p>
+            )}
+            <button type="submit" className="btn-primary hire-submit-btn" disabled={status === "submitting"}>
+              {status === "submitting" ? "Sending…" : "Schedule meeting"}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ChatLauncher({
   hidden,
   pinned,
@@ -585,6 +713,7 @@ function ScrollToTop({
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [hireOpen, setHireOpen] = useState(false);
   const scrollTopBtnRef = useRef<HTMLButtonElement>(null);
   const chatLauncherRef = useRef<HTMLButtonElement>(null);
   const { pinned, primaryTop, secondaryTop } = useScrollPin(scrollTopBtnRef, chatLauncherRef);
@@ -592,6 +721,11 @@ export default function App() {
   function openChat() {
     setMenuOpen(false);
     setChatOpen(true);
+  }
+
+  function openHire() {
+    setMenuOpen(false);
+    setHireOpen(true);
   }
 
   return (
@@ -608,7 +742,7 @@ export default function App() {
               onNavigate={(e) => { setMenuOpen(false); handleNavClick(e); }}
             />
           ))}
-          <a href="#contact" className="btn-hire" onClick={(e) => { setMenuOpen(false); handleNavClick(e); }}>Hire me</a>
+          <button type="button" className="btn-hire" onClick={openHire}>Hire me</button>
         </nav>
         <button className="menu-toggle" onClick={() => setMenuOpen((o) => !o)} aria-label="Menu">
           <span /><span /><span />
@@ -684,6 +818,7 @@ export default function App() {
       <ScrollToTop pinned={pinned} pinnedTop={primaryTop} anchorRef={scrollTopBtnRef} />
       <ChatLauncher hidden={chatOpen} pinned={pinned} pinnedTop={secondaryTop} onOpen={openChat} anchorRef={chatLauncherRef} />
       <ChatModal open={chatOpen} onClose={() => setChatOpen(false)} />
+      <HireModal open={hireOpen} onClose={() => setHireOpen(false)} />
     </>
   );
 }
