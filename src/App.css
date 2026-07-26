@@ -1036,6 +1036,16 @@ a {
     font-size: 0.95rem;
   }
 
+  /* Kept as a compact pill (not a full-width bar) so its purple background
+     doesn't stretch edge-to-edge like the plain nav links above it — just
+     left-aligned with them via the matching 24px margin. */
+  .site-nav .btn-hire {
+    display: inline-block;
+    width: auto;
+    align-self: flex-start;
+    margin: 8px 24px 4px;
+  }
+
   .menu-toggle {
     display: flex;
   }
