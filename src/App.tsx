@@ -89,21 +89,7 @@ function ChatBubbleIcon() {
 function BotIcon() {
   return (
     <div className="bot-icon">
-      <svg viewBox="0 2.25 24 24" fill="currentColor">
-        <path
-          fillRule="evenodd"
-          d="M12 2.5a4.5 4.5 0 0 1 0 9 4.5 4.5 0 0 1 0-9z
-             M8.3 5.8 H10.7 Q11.0 5.8 11.0 6.3 V8.2 Q11.0 9.0 9.8 9.0 H8.9 Q8.1 9.0 8.0 8.2 V6.3 Q8.0 5.8 8.3 5.8 Z
-             M15.7 5.8 H13.3 Q13.0 5.8 13.0 6.3 V8.2 Q13.0 9.0 14.2 9.0 H15.1 Q15.9 9.0 16.0 8.2 V6.3 Q16.0 5.8 15.7 5.8 Z"
-        />
-        {/* Suit body with V-collar cut out via evenodd */}
-        <path
-          fillRule="evenodd"
-          d="M3 24 L4 14 L8 11.5 L12 12 L16 11.5 L20 14 L21 24 Z M9 12.5 L12 21 L15 12.5 Z"
-        />
-        {/* Tie inside the V-collar */}
-        <path d="M11.3 14l-.8 5.5 1.5 1.5 1.5-1.5-.8-5.5-.4-.7h-1z" />
-      </svg>
+      <img src="/avatar.svg" alt="Assistant avatar" />
     </div>
   );
 }

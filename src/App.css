@@ -538,11 +538,15 @@ a {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
-.bot-icon svg {
-  width: 32px;
-  height: 32px;
+.bot-icon img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
 }
 
 .activity-bubble {
@@ -832,11 +836,6 @@ a {
 .chat-modal-title .bot-icon {
   width: 36px;
   height: 36px;
-}
-
-.chat-modal-title .bot-icon svg {
-  width: 26px;
-  height: 26px;
 }
 
 .chat-modal-title div {
