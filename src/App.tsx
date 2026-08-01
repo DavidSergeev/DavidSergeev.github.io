@@ -13,10 +13,11 @@ interface Message {
 
 // ── Config ───────────────────────────────────────────────────────────────────
 
-// Replace with the Lambda Function URL printed by `sam deploy`
-const LAMBDA_URL = "https://u3jss62ij45ynihyrjkhicqoam0ujzzm.lambda-url.eu-south-1.on.aws/";
+// landing-api-worker's custom domain — signs and proxies requests to the
+// AWS_IAM-protected Lambda Function URL (see landing-api-worker/src/index.js)
+const API_URL = "https://api.david-slutsky.com/";
 // Direct (non-chat) endpoint backing the "Hire me" modal — see POST /schedule-meeting in main.py
-const SCHEDULE_MEETING_URL = `${LAMBDA_URL}schedule-meeting`;
+const SCHEDULE_MEETING_URL = `${API_URL}schedule-meeting`;
 
 // ── Chat helpers ─────────────────────────────────────────────────────────────
 
@@ -141,7 +142,7 @@ function Chat() {
     }
 
     try {
-      const res = await fetch(LAMBDA_URL, {
+      const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: text }),
