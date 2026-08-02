@@ -383,9 +383,15 @@ a {
 }
 
 .work-link {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--accent-light);
+  cursor: pointer;
   transition: color 0.2s;
 }
 
@@ -1005,6 +1011,62 @@ a {
   border: none;
   cursor: pointer;
   font-family: inherit;
+}
+
+/* ── Work modal (expandable project details) ──── */
+.work-modal-panel {
+  width: min(560px, 100%);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+  animation: chatModalPop 0.22s ease;
+}
+
+.work-modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 22px 24px;
+  overflow-y: auto;
+}
+
+.work-modal-desc {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+/* Collapsed state: clamp to a fixed number of lines. Browsers automatically
+   append an ellipsis ("…") at the cut-off point when the text overflows,
+   signaling there's more to read. */
+.work-modal-desc:not(.expanded) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+}
+
+.work-modal-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent-light);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.work-modal-toggle:hover {
+  color: var(--accent);
 }
 
 /* ── Responsive ──────────────────────────────── */

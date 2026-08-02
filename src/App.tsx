@@ -461,6 +461,78 @@ function HireModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   );
 }
 
+// ── Work modal (expandable project details) ─────────────────────────────────
+
+function WorkModal({ work, onClose }: { work: Work | null; onClose: () => void }) {
+  const [expanded, setExpanded] = useState(false);
+  const [clamped, setClamped] = useState(false);
+  const descRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (!work) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [work, onClose]);
+
+  // Reset to collapsed every time a different project is opened.
+  useEffect(() => {
+    setExpanded(false);
+  }, [work]);
+
+  // Detect whether the (collapsed, clamped) text actually overflows, so the
+  // "Show more" toggle only appears when there's really more text to reveal.
+  useEffect(() => {
+    if (!work || expanded) return;
+    const el = descRef.current;
+    if (!el) return;
+    setClamped(el.scrollHeight > el.clientHeight + 1);
+  }, [work, expanded]);
+
+  if (!work) return null;
+
+  return (
+    <div className="chat-modal-backdrop" onClick={onClose}>
+      <div className="work-modal-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="chat-modal-header">
+          <div className="chat-modal-title">
+            <div>
+              <strong>{work.title}</strong>
+              <span>{work.tag}</span>
+            </div>
+          </div>
+          <button className="chat-modal-close" onClick={onClose} aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </div>
+        <div className="work-modal-body">
+          <p ref={descRef} className={`work-modal-desc ${expanded ? "expanded" : ""}`}>
+            {work.details}
+          </p>
+          {(clamped || expanded) && (
+            <button
+              type="button"
+              className="work-modal-toggle"
+              onClick={() => setExpanded((e) => !e)}
+            >
+              {expanded ? "Show less" : "Show more"}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ChatLauncher({
   hidden,
   pinned,
@@ -583,10 +655,35 @@ const SKILLS = [
   { icon: "🗄️", label: "Databases & SQL" },
 ];
 
-const WORKS = [
-  { title: "SaaS Dashboard", desc: "Real-time analytics platform built with React, D3, and GraphQL.", tag: "Web App" },
-  { title: "Dev Tooling CLI", desc: "Open-source CLI that speeds up scaffolding by 10×.", tag: "Open Source" },
-  { title: "E-commerce Redesign", desc: "Full UX overhaul that improved conversion rate by 34%.", tag: "Design" },
+interface Work {
+  title: string;
+  desc: string;
+  tag: string;
+  details: string;
+}
+
+const WORKS: Work[] = [
+  {
+    title: "SaaS Dashboard",
+    desc: "Real-time analytics platform built with React, D3, and GraphQL.",
+    tag: "Web App",
+    details:
+      "Real-time analytics platform built with React, D3, and GraphQL. Designed and shipped a multi-tenant dashboard that streams live usage metrics to thousands of concurrent users over WebSockets, with sub-second chart updates powered by a custom D3 rendering layer tuned for high-frequency data. The GraphQL API layer replaced a sprawling set of REST endpoints, cutting median dashboard load time by more than half while giving each team the ability to compose their own custom widgets. Rolled out an incremental migration strategy so existing customers experienced zero downtime, and built an internal component library that let the design and engineering teams ship new dashboard modules in days instead of weeks.",
+  },
+  {
+    title: "Dev Tooling CLI",
+    desc: "Open-source CLI that speeds up scaffolding by 10×.",
+    tag: "Open Source",
+    details:
+      "Open-source CLI that speeds up scaffolding by 10×. Built a plugin-based architecture so the community could contribute new project templates without touching the core codebase, which grew adoption to thousands of weekly downloads within a few months of launch. Invested heavily in developer experience — interactive prompts, sensible defaults, and clear error messages — so first-time users could go from install to a running project in under a minute. Wrote extensive documentation and a contributor guide that lowered the barrier for outside pull requests, and set up automated release tooling so new versions could ship safely multiple times a week.",
+  },
+  {
+    title: "E-commerce Redesign",
+    desc: "Full UX overhaul that improved conversion rate by 34%.",
+    tag: "Design",
+    details:
+      "Full UX overhaul that improved conversion rate by 34%. Led a ground-up redesign of the checkout and product discovery flows after auditing months of session recordings and funnel analytics to pinpoint exactly where shoppers were dropping off. Simplified the cart-to-checkout path from five steps down to two, introduced persistent cart state across devices, and reworked the mobile navigation to surface high-intent categories faster. Partnered closely with the growth team to A/B test every major change before rollout, which not only validated the conversion lift but also uncovered a handful of accessibility issues that were quietly costing sales.",
+  },
 ];
 
 // ── Scroll-pinned floating buttons ──────────────────────────────────────────
@@ -701,6 +798,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [hireOpen, setHireOpen] = useState(false);
+  const [activeWork, setActiveWork] = useState<Work | null>(null);
   const scrollTopBtnRef = useRef<HTMLButtonElement>(null);
   const chatLauncherRef = useRef<HTMLButtonElement>(null);
   const { pinned, primaryTop, secondaryTop } = useScrollPin(scrollTopBtnRef, chatLauncherRef);
@@ -773,7 +871,9 @@ export default function App() {
                 <span className="work-tag">{w.tag}</span>
                 <h3>{w.title}</h3>
                 <p>{w.desc}</p>
-                <a href="#" className="work-link">View project →</a>
+                <button type="button" className="work-link" onClick={() => setActiveWork(w)}>
+                  Read More
+                </button>
               </div>
             ))}
           </div>
@@ -806,6 +906,7 @@ export default function App() {
       <ChatLauncher hidden={chatOpen} pinned={pinned} pinnedTop={secondaryTop} onOpen={openChat} anchorRef={chatLauncherRef} />
       <ChatModal open={chatOpen} onClose={() => setChatOpen(false)} />
       <HireModal open={hireOpen} onClose={() => setHireOpen(false)} />
+      <WorkModal work={activeWork} onClose={() => setActiveWork(null)} />
     </>
   );
 }
