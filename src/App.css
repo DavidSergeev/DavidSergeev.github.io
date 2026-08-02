@@ -337,15 +337,14 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: #f4f4f8;
+  width: 64px;
+  height: 64px;
+  background: transparent;
 }
 
 .skill-icon {
-  width: 28px;
-  height: 28px;
+  width: 44px;
+  height: 44px;
 }
 
 /* ── Work ────────────────────────────────────── */
@@ -1211,13 +1210,13 @@ a {
   }
 
   .skill-icon-badge {
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
   }
 
   .skill-icon {
-    width: 22px;
-    height: 22px;
+    width: 34px;
+    height: 34px;
   }
 
   /* Work: single-column stack on mobile */
