@@ -650,7 +650,7 @@ const SKILLS = [
   { icon: "/python-3.svg", label: "Python" },
   { icon: "/backend.svg", label: "Backend Engineering" },
   { icon: "/big-data.svg", label: "Big Data" },
-  { icon: "/brain-gears.svg", label: "ML Engineering" },
+  { icon: "/classification.svg", label: "ML Engineering" },
   { icon: "/grapth.svg", label: "Distributed Systems" },
   { icon: "/computer-vision.svg", label: "Computer Vision" },
 ];
