@@ -333,8 +333,19 @@ a {
   transform: translateY(-3px);
 }
 
+.skill-icon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f4f4f8;
+}
+
 .skill-icon {
-  font-size: 1.8rem;
+  width: 28px;
+  height: 28px;
 }
 
 /* ── Work ────────────────────────────────────── */
@@ -1199,8 +1210,14 @@ a {
     gap: 8px;
   }
 
+  .skill-icon-badge {
+    width: 40px;
+    height: 40px;
+  }
+
   .skill-icon {
-    font-size: 1.5rem;
+    width: 22px;
+    height: 22px;
   }
 
   /* Work: single-column stack on mobile */

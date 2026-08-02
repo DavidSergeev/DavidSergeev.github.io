@@ -647,12 +647,12 @@ function NavLink({
 }
 
 const SKILLS = [
-  { icon: "⚛️", label: "React & TypeScript" },
-  { icon: "🟢", label: "Node.js & APIs" },
-  { icon: "🎨", label: "UI / UX Design" },
-  { icon: "☁️", label: "Cloud & DevOps" },
-  { icon: "📱", label: "Mobile-first Web" },
-  { icon: "🗄️", label: "Databases & SQL" },
+  { icon: "/python.svg", label: "Python" },
+  { icon: "/backend.svg", label: "Backend Engineering" },
+  { icon: "/big-data.svg", label: "Big Data" },
+  { icon: "/brain-gears.svg", label: "ML Engineering" },
+  { icon: "/grapth.svg", label: "Distributed Systems" },
+  { icon: "/computer-vision.svg", label: "Computer Vision" },
 ];
 
 interface Work {
@@ -854,7 +854,9 @@ export default function App() {
           <div className="skills-grid">
             {SKILLS.map((s) => (
               <div key={s.label} className="skill-card">
-                <span className="skill-icon">{s.icon}</span>
+                <span className="skill-icon-badge">
+                  <img src={s.icon} alt="" className="skill-icon" />
+                </span>
                 <span>{s.label}</span>
               </div>
             ))}
