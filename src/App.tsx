@@ -737,6 +737,7 @@ function ScrollToTop({
   anchorRef: React.RefObject<HTMLButtonElement | null>;
 }) {
   const [visible, setVisible] = useState(false);
+  const [scrolling, setScrolling] = useState(false);
 
   useEffect(() => {
     function onScroll() {
@@ -747,14 +748,44 @@ function ScrollToTop({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Keeps the button purple only for the duration of the smooth-scroll
+  // animation it triggered, then reliably drops back to gray — instead of
+  // relying on :hover/:active, which can get stuck on touch devices.
+  useEffect(() => {
+    if (!scrolling) return;
+
+    function stop() {
+      setScrolling(false);
+    }
+
+    let idleTimer = window.setTimeout(stop, 1200);
+    function onScroll() {
+      window.clearTimeout(idleTimer);
+      if (window.scrollY <= 0) {
+        stop();
+        return;
+      }
+      idleTimer = window.setTimeout(stop, 150);
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scrollend", stop);
+    return () => {
+      window.clearTimeout(idleTimer);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scrollend", stop);
+    };
+  }, [scrolling]);
+
   function scrollTop() {
+    setScrolling(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
     <button
       ref={anchorRef}
-      className={`scroll-top-btn ${visible ? "visible" : ""} ${pinned ? "pinned" : ""}`}
+      className={`scroll-top-btn ${visible ? "visible" : ""} ${pinned ? "pinned" : ""} ${scrolling ? "scrolling" : ""}`}
       style={pinned ? { top: `${pinnedTop}px` } : undefined}
       onClick={scrollTop}
       aria-label="Back to top"

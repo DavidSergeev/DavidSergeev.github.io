@@ -752,7 +752,22 @@ a {
   transform: translateY(0);
 }
 
-.scroll-top-btn:hover {
+/* Only apply the hover color on devices that genuinely support hovering
+   (mouse/trackpad). On touch devices a tap has no "leave" event, so a plain
+   :hover rule gets stuck in the pressed color after scrolling finishes. */
+@media (hover: hover) and (pointer: fine) {
+  .scroll-top-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+}
+
+/* Purple while pressed and while the scroll-to-top animation it triggered is
+   still running; gray the rest of the time (covers touch devices, where
+   :hover/:active can otherwise stick after the tap ends). */
+.scroll-top-btn:active,
+.scroll-top-btn.scrolling {
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
