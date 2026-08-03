@@ -467,6 +467,10 @@ function WorkModal({ work, onClose }: { work: Work | null; onClose: () => void }
   const [expanded, setExpanded] = useState(false);
   const [clamped, setClamped] = useState(false);
   const descRef = useRef<HTMLParagraphElement>(null);
+  // Remembers which projects the user has already expanded at least once, so
+  // reopening the same project's "Read More" jumps straight to the full text
+  // instead of making them expand it again.
+  const seenExpandedRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!work) return;
@@ -482,9 +486,9 @@ function WorkModal({ work, onClose }: { work: Work | null; onClose: () => void }
     };
   }, [work, onClose]);
 
-  // Reset to collapsed every time a different project is opened.
+  // Open collapsed by default, unless this project was already expanded before.
   useEffect(() => {
-    setExpanded(false);
+    setExpanded(!!work && seenExpandedRef.current.has(work.title));
   }, [work]);
 
   // Detect whether the (collapsed, clamped) text actually overflows, so the
@@ -522,7 +526,13 @@ function WorkModal({ work, onClose }: { work: Work | null; onClose: () => void }
             <button
               type="button"
               className="work-modal-toggle"
-              onClick={() => setExpanded((e) => !e)}
+              onClick={() =>
+                setExpanded((e) => {
+                  const next = !e;
+                  if (next && work) seenExpandedRef.current.add(work.title);
+                  return next;
+                })
+              }
             >
               {expanded ? "Show less" : "Show more"}
             </button>

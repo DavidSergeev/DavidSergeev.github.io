@@ -1063,6 +1063,7 @@ a {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 5;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .work-modal-toggle {
