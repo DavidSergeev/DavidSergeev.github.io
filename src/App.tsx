@@ -858,11 +858,7 @@ export default function App() {
             {SKILLS.map((s) => (
               <div key={s.label} className="skill-card">
                 <span className="skill-icon-badge">
-                  <img
-                    src={s.icon}
-                    alt=""
-                    className={`skill-icon${s.icon === "/classification-2.svg" ? " skill-icon--lg" : ""}`}
-                  />
+                  <img src={s.icon} alt="" className="skill-icon" />
                 </span>
                 <span>{s.label}</span>
               </div>

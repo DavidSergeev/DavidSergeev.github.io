@@ -345,11 +345,6 @@ a {
 }
 
 .skill-icon {
-  width: 80px;
-  height: 80px;
-}
-
-.skill-icon--lg {
   width: 120px;
   height: 120px;
 }
@@ -1219,11 +1214,6 @@ a {
   }
 
   .skill-icon {
-    width: 60px;
-    height: 60px;
-  }
-
-  .skill-icon--lg {
     width: 85px;
     height: 85px;
   }
