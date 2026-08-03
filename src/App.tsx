@@ -464,14 +464,6 @@ function HireModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 // ── Work modal (expandable project details) ─────────────────────────────────
 
 function WorkModal({ work, onClose }: { work: Work | null; onClose: () => void }) {
-  const [expanded, setExpanded] = useState(false);
-  const [clamped, setClamped] = useState(false);
-  const descRef = useRef<HTMLParagraphElement>(null);
-  // Remembers which projects the user has already expanded at least once, so
-  // reopening the same project's "Read More" jumps straight to the full text
-  // instead of making them expand it again.
-  const seenExpandedRef = useRef<Set<string>>(new Set());
-
   useEffect(() => {
     if (!work) return;
     const prevOverflow = document.body.style.overflow;
@@ -485,20 +477,6 @@ function WorkModal({ work, onClose }: { work: Work | null; onClose: () => void }
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [work, onClose]);
-
-  // Open collapsed by default, unless this project was already expanded before.
-  useEffect(() => {
-    setExpanded(!!work && seenExpandedRef.current.has(work.title));
-  }, [work]);
-
-  // Detect whether the (collapsed, clamped) text actually overflows, so the
-  // "Show more" toggle only appears when there's really more text to reveal.
-  useEffect(() => {
-    if (!work || expanded) return;
-    const el = descRef.current;
-    if (!el) return;
-    setClamped(el.scrollHeight > el.clientHeight + 1);
-  }, [work, expanded]);
 
   if (!work) return null;
 
@@ -519,24 +497,8 @@ function WorkModal({ work, onClose }: { work: Work | null; onClose: () => void }
           </button>
         </div>
         <div className="work-modal-body">
-          <p ref={descRef} className={`work-modal-desc ${expanded ? "expanded" : ""}`}>
-            {work.details}
-          </p>
-          {(clamped || expanded) && (
-            <button
-              type="button"
-              className="work-modal-toggle"
-              onClick={() =>
-                setExpanded((e) => {
-                  const next = !e;
-                  if (next && work) seenExpandedRef.current.add(work.title);
-                  return next;
-                })
-              }
-            >
-              {expanded ? "Show less" : "Show more"}
-            </button>
-          )}
+          {/* Always the full, un-truncated text — the card's preview is what gets truncated. */}
+          <p className="work-modal-desc">{work.details}</p>
         </div>
       </div>
     </div>
@@ -882,7 +844,7 @@ export default function App() {
               <div key={w.title} className="work-card">
                 <span className="work-tag">{w.tag}</span>
                 <h3>{w.title}</h3>
-                <p>{w.desc}</p>
+                <p className="work-card-desc">{w.desc.replace(/[.\s]+$/, "")}…</p>
                 <button type="button" className="work-link" onClick={() => setActiveWork(w)}>
                   Read More
                 </button>

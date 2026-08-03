@@ -394,6 +394,14 @@ a {
   flex: 1;
 }
 
+.work-card-desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .work-link {
   align-self: flex-start;
   background: none;
@@ -1053,33 +1061,6 @@ a {
   color: var(--text);
   line-height: 1.7;
   white-space: pre-line;
-}
-
-/* Collapsed state: clamp to a fixed number of lines. Browsers automatically
-   append an ellipsis ("…") at the cut-off point when the text overflows,
-   signaling there's more to read. */
-.work-modal-desc:not(.expanded) {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.work-modal-toggle {
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: inherit;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--accent-light);
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.work-modal-toggle:hover {
-  color: var(--accent);
 }
 
 /* ── Responsive ──────────────────────────────── */
