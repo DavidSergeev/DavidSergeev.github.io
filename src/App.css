@@ -349,6 +349,11 @@ a {
   height: 80px;
 }
 
+.skill-icon--lg {
+  width: 100px;
+  height: 100px;
+}
+
 /* ── Work ────────────────────────────────────── */
 .work-grid {
   display: grid;
@@ -1216,6 +1221,11 @@ a {
   .skill-icon {
     width: 60px;
     height: 60px;
+  }
+
+  .skill-icon--lg {
+    width: 75px;
+    height: 75px;
   }
 
   /* Work: single-column stack on mobile */
