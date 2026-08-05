@@ -860,7 +860,7 @@ export default function App() {
                 <span className="skill-icon-badge">
                   <img src={s.icon} alt="" className="skill-icon" />
                 </span>
-                <span>{s.label}</span>
+                <span className="skill-label">{s.label}</span>
               </div>
             ))}
           </div>

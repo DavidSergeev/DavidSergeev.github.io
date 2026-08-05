@@ -320,12 +320,14 @@ a {
   justify-content: center;
   gap: 10px;
   aspect-ratio: 1 / 1;
+  overflow: hidden;
   padding: 20px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font-size: 0.875rem;
   font-weight: 500;
+  line-height: 1.25;
   text-align: center;
   transition: border-color 0.2s, transform 0.2s;
 }
@@ -333,6 +335,16 @@ a {
 .skill-card:hover {
   border-color: var(--accent);
   transform: translateY(-3px);
+}
+
+/* Reserve space for two lines regardless of label length so every
+   card ends up the same height (and therefore square), whether the
+   label wraps onto one line or two. */
+.skill-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(1.25em * 2);
 }
 
 .skill-icon-badge {
