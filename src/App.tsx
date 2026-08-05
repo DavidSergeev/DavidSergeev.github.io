@@ -820,7 +820,7 @@ export default function App() {
     <>
       {/* ── Header ── */}
       <header className="site-header">
-        <a href="#" className="logo" onClick={handleNavClick}>David<span>Studio</span></a>
+        <a href="#" className="logo" onClick={handleNavClick}>DSL<span>Studio</span></a>
         <nav className={`site-nav ${menuOpen ? "open" : ""}`}>
           {NAV_LINKS.map((l) => (
             <NavLink
@@ -899,7 +899,7 @@ export default function App() {
 
       {/* ── Footer ── */}
       <footer className="site-footer">
-        <p>© 2026 DavidStudio. Designed & built with care.</p>
+        <p>© 2026 David Slutsky Studio. Designed & built with care.</p>
         <div className="footer-links">
           {NAV_LINKS.map((l) => (
             <NavLink key={l} label={l} onOpenChat={openChat} />
