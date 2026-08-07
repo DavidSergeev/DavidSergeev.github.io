@@ -889,10 +889,9 @@ export default function App() {
           <h2 className="section-title">Let's work together</h2>
           <p className="section-sub">Have a project in mind? I'd love to hear about it.</p>
           <div className="contact-links">
-            <a href="mailto:hello@alexdev.io">hello@alexdev.io</a>
-            <a href="#">GitHub</a>
-            <a href="#">LinkedIn</a>
-            <a href="#">Twitter / X</a>
+            <a href="mailto:davidsergeev20@gmail.com">hello@alexdev.io</a>
+            <a href="https://github.com/DavidSergeev" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://www.linkedin.com/in/david-slutsky-64420121b?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           </div>
         </section>
       </main>
