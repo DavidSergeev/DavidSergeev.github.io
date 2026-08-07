@@ -814,7 +814,7 @@ export default function App() {
     setMenuOpen(false);
     setChatOpen(true);
     // Fire-and-forget: don't let a slow/failed wake-up call delay or block opening the chat.
-    void fetch(WAKE_UP_URL, { method: "POST" }).catch(() => {});
+    void fetch(WAKE_UP_URL, { method: "POST" }).catch(() => { });
   }
 
   function openHire() {
@@ -895,7 +895,7 @@ export default function App() {
           <h2 className="section-title">Let's work together</h2>
           <p className="section-sub">Have a project in mind? I'd love to hear about it.</p>
           <div className="contact-links">
-            <a href="mailto:davidsergeev20@gmail.com">hello@alexdev.io</a>
+            <a href="mailto:davidsergeev20@gmail.com">davidsergeev20@gmail.com</a>
             <a href="https://github.com/DavidSergeev" target="_blank" rel="noopener noreferrer">GitHub</a>
             <a href="https://www.linkedin.com/in/david-slutsky-64420121b?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           </div>
