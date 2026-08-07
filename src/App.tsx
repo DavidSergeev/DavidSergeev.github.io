@@ -18,6 +18,10 @@ interface Message {
 const API_URL = "https://api.david-slutsky.com/";
 // Direct (non-chat) endpoint backing the "Hire me" modal — see POST /schedule-meeting in main.py
 const SCHEDULE_MEETING_URL = `${API_URL}schedule-meeting`;
+// Pings the Lambda to cold-start it before the user sends their first chat message —
+// see POST /wake-up in main.py. landing-api-worker only forwards the first call per
+// caller every 2h; the rest are answered "redirected" without reaching the Lambda.
+const WAKE_UP_URL = `${API_URL}wake-up`;
 
 // ── Chat helpers ─────────────────────────────────────────────────────────────
 
@@ -809,6 +813,8 @@ export default function App() {
   function openChat() {
     setMenuOpen(false);
     setChatOpen(true);
+    // Fire-and-forget: don't let a slow/failed wake-up call delay or block opening the chat.
+    void fetch(WAKE_UP_URL, { method: "POST" }).catch(() => {});
   }
 
   function openHire() {
