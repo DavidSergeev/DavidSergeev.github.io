@@ -640,25 +640,33 @@ interface Work {
 
 const WORKS: Work[] = [
   {
-    title: "SaaS Dashboard",
-    desc: "Real-time analytics platform built with React, D3, and GraphQL.",
-    tag: "Web App",
+    title: "Livescore OCR & Model Evaluation",
+    desc: "OCR pipeline and model evaluation service for a real-time livescore analytics product.",
+    tag: "Model Evaluation | OCR Pipeline",
     details:
-      "Real-time analytics platform built with React, D3, and GraphQL. Designed and shipped a multi-tenant dashboard that streams live usage metrics to thousands of concurrent users over WebSockets, with sub-second chart updates powered by a custom D3 rendering layer tuned for high-frequency data. The GraphQL API layer replaced a sprawling set of REST endpoints, cutting median dashboard load time by more than half while giving each team the ability to compose their own custom widgets. Rolled out an incremental migration strategy so existing customers experienced zero downtime, and built an internal component library that let the design and engineering teams ship new dashboard modules in days instead of weeks.",
+      `Built the OCR and model-evaluation backbone of a real-time livescore analytics product used to surface live match insights.
+      Designed and developed a rule-based evaluation system that reconstructs the "ground-truth" output from raw model predictions using domain-specific heuristics, then measures each prediction's deviation from it to continuously score model quality.
+      Developed the OCR parsing service that converts raw model output into structured, business-ready objects — turning noisy visual data into fields the rest of the platform could rely on.
+      This evaluation layer gave the team an objective, always-on signal for model accuracy without waiting on manual QA.`,
   },
   {
-    title: "Dev Tooling CLI",
-    desc: "Open-source CLI that speeds up scaffolding by 10×.",
-    tag: "Open Source",
+    title: "Multimodal CV Project",
+    desc: "Distributed real-time computer-vision system powering live match analytics.",
+    tag: "Distributed Systems | Real-time Inference",
     details:
-      "Open-source CLI that speeds up scaffolding by 10×. Built a plugin-based architecture so the community could contribute new project templates without touching the core codebase, which grew adoption to thousands of weekly downloads within a few months of launch. Invested heavily in developer experience — interactive prompts, sensible defaults, and clear error messages — so first-time users could go from install to a running project in under a minute. Wrote extensive documentation and a contributor guide that lowered the barrier for outside pull requests, and set up automated release tooling so new versions could ship safely multiple times a week.",
+      `Designed and built a high-scale computer-vision pipeline covering real-time inference, granular match analysis, and the full data lifecycle behind it, running on GPU nodes in AWS.
+      Architected a distributed inference system using a "worker-manager" pattern, with a scheduler that spins up dedicated inference workers per live match on demand.
+      In parallel, built data-collection workers that automatically captured annotations and training data from live traffic, closing the loop between production and model training.
+      Developed a model-evaluation algorithm based on those annotations and a separate reporting service that continuously computes the model's live accuracy and pushes it to the customer.`,
   },
   {
-    title: "E-commerce Redesign",
-    desc: "Full UX overhaul that improved conversion rate by 34%.",
-    tag: "Design",
+    title: "Anomaly Detection Project",
+    desc: "Batch anomaly-detection pipeline with automatic statistical baselining, built on Databricks.",
+    tag: "Data Engineering | Feature Engineering",
     details:
-      "Full UX overhaul that improved conversion rate by 34%. Led a ground-up redesign of the checkout and product discovery flows after auditing months of session recordings and funnel analytics to pinpoint exactly where shoppers were dropping off. Simplified the cart-to-checkout path from five steps down to two, introduced persistent cart state across devices, and reworked the mobile navigation to surface high-intent categories faster. Partnered closely with the growth team to A/B test every major change before rollout, which not only validated the conversion lift but also uncovered a handful of accessibility issues that were quietly costing sales.",
+      `Took part in researching and building an anomaly-detection pipeline deployed primarily on Databricks.
+      Developed an automatic statistical-baseline calculation mechanism that computes healthy ranges for a set of features, which an anomaly-detection model then scores incoming data against.
+      The pipeline ran in scheduled batches, orchestrated by a series of cron jobs within the Databricks environment, so new anomalies were surfaced without any manual re-runs.`,
   },
 ];
 
