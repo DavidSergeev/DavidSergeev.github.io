@@ -56,6 +56,11 @@ const QUICK_ACTIONS: QuickAction[] = [
     text: "Please have David reach out to me. My contact details: ",
     autoSend: false,
   },
+  {
+    label: "Why David applied to my company",
+    text: "Why did David choose to send his CV to my company? Company name: ",
+    autoSend: false,
+  },
 ];
 
 let nextId = 2;
